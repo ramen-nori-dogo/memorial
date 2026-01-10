@@ -1,0 +1,8 @@
+# Memorial Site - Dependencies
+# メモリアルサイト構築に必要なライブラリ
+
+pandas>=2.0.0          # CSV処理
+jinja2>=3.1.0          # HTMLテンプレートエンジン
+markdown>=3.5.0        # Markdownからの変換
+Pillow>=10.0.0         # 画像処理・リサイズ
+requests>=2.31.0       # HTTPリクエスト（CSV取得用）

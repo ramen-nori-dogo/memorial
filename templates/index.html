@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- ヒーローセクション -->
+<header class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="container position-relative">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="hero-title">
+                    <i class="{{ hero.icon|default('bi-flower1') }}"></i>
+                    {{ hero.title|default(shop_name) }}
+                </h1>
+                <p class="hero-subtitle">
+                    {{ hero.subtitle|default('故人を偲び、皆様の想い出を集めたメモリアルサイトです') }}
+                </p>
+                <div class="hero-stats">
+                    <span class="stat-item">
+                        <i class="bi bi-chat-heart"></i>
+                        {{ comment_count }} {{ hero.stats.comments_label|default('件の想い出') }}
+                    </span>
+                    <span class="stat-item">
+                        <i class="bi bi-image"></i>
+                        {{ image_count }} {{ hero.stats.images_label|default('枚の写真') }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ナビゲーション -->
+<nav class="sticky-nav">
+    <div class="container">
+        <ul class="nav justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link" href="#about">
+                    <i class="bi bi-person-heart"></i> {{ navigation.about|default('店主について') }}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#comments">
+                    <i class="bi bi-chat-quote"></i> {{ navigation.comments|default('ファンの声') }}
+                </a>
+            </li>
+            {% if images %}
+            <li class="nav-item">
+                <a class="nav-link" href="#gallery">
+                    <i class="bi bi-images"></i> {{ navigation.gallery|default('ギャラリー') }}
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<main class="main-content">
+    <!-- 店主について -->
+    <section id="about" class="section about-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="{{ sections.about.icon|default('bi-person-heart') }}"></i>
+                    {{ sections.about.title|default('店主について') }}
+                </h2>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="about-content card-memorial">
+                        {% if about_html %}
+                        {{ about_html | safe }}
+                        {% else %}
+                        <p class="text-muted text-center">
+                            <em>店主についての情報は準備中です...</em>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ファンの声（コメント） -->
+    <section id="comments" class="section comments-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="{{ sections.comments.icon|default('bi-chat-quote') }}"></i>
+                    {{ sections.comments.title|default('ファンの声') }}
+                </h2>
+                <p class="section-description">
+                    {{ sections.comments.description|default('皆様から寄せられた、心温まる想い出の数々です') }}
+                </p>
+            </div>
+            
+            {% if comments %}
+            <div class="timeline">
+                {% for comment in comments %}
+                <div class="timeline-item {% if loop.index is odd %}timeline-left{% else %}timeline-right{% endif %}">
+                    <div class="timeline-marker">
+                        <i class="{{ ui.timeline_marker_icon|default('bi-heart-fill') }}"></i>
+                    </div>
+                    <div class="timeline-content card-memorial">
+                        <div class="comment-header">
+                            <span class="comment-author">
+                                <i class="{{ ui.comment_author_icon|default('bi-person-circle') }}"></i>
+                                {{ comment.name }}
+                            </span>
+                            {% if comment.timestamp %}
+                            <span class="comment-date">
+                                <i class="{{ ui.comment_date_icon|default('bi-clock') }}"></i>
+                                {{ comment.timestamp }}
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="comment-body">
+                            <p>{{ comment.content }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="empty-state card-memorial text-center">
+                        <i class="{{ ui.empty_state_icon|default('bi-chat-dots') }} empty-icon"></i>
+                        <p>{{ sections.comments.empty_message|default('まだコメントがありません。') }}</p>
+                        <p class="text-muted">{{ sections.comments.empty_submessage|default('皆様からの想い出をお待ちしています。') }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- 写真ギャラリー -->
+    {% if images %}
+    <section id="gallery" class="section gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="{{ sections.gallery.icon|default('bi-images') }}"></i>
+                    {{ sections.gallery.title|default('ギャラリー') }}
+                </h2>
+                <p class="section-description">
+                    {{ sections.gallery.description|default('思い出の写真をご覧ください') }}
+                </p>
+            </div>
+            
+            <div class="gallery-grid">
+                {% for image in images %}
+                <div class="gallery-item">
+                    <a href="static/images/{{ image }}" data-bs-toggle="modal" data-bs-target="#imageModal" data-image="static/images/{{ image }}">
+                        <img src="static/images/{{ image }}" alt="{{ ui.photo_alt_prefix|default('思い出の写真') }} {{ loop.index }}" loading="lazy">
+                        <div class="gallery-overlay">
+                            <i class="{{ ui.gallery_zoom_icon|default('bi-zoom-in') }}"></i>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</main>
+
+<!-- フッター -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <p class="footer-text">
+                <i class="{{ footer.icon|default('bi-flower2') }}"></i>
+                {{ footer.text|default('いつまでも心の中に') }}
+                <i class="{{ footer.icon|default('bi-flower2') }}"></i>
+            </p>
+            <p class="footer-meta">
+                {{ footer.updated_label|default('最終更新') }}: {{ generated_at }}
+            </p>
+        </div>
+    </div>
+</footer>
+
+<!-- 画像モーダル -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="{{ ui.modal_close_label|default('閉じる') }}"></button>
+                <img src="" alt="{{ ui.modal_alt_text|default('拡大画像') }}" class="img-fluid rounded" id="modalImage">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// 画像モーダルの処理
+document.querySelectorAll('[data-image]').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const imageSrc = this.getAttribute('data-image');
+        document.getElementById('modalImage').src = imageSrc;
+    });
+});
+
+// スムーススクロール
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            const offset = 80; // ナビゲーションの高さ
+            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+// ナビゲーションのアクティブ状態
+window.addEventListener('scroll', function() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.sticky-nav .nav-link');
+    
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        if (window.pageYOffset >= sectionTop) {
+            current = section.getAttribute('id');
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}

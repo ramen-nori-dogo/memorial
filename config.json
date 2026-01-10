@@ -1,0 +1,54 @@
+{
+  "site": {
+    "title": "ラーメンNORI - メモリアルサイト",
+    "description": "愛媛県松山市道後にあった「ラーメンNORI」と店主のNORIさんを偲ぶメモリアルサイトです。皆様の想い出とともに",
+    "shop_name": "ラーメンNORI - 世界で一番優しいラーメン"
+  },
+  "hero": {
+    "title": "ラーメンNORI",
+    "subtitle": "愛媛県松山市道後にあった「ラーメンNORI」と店主のNORIさんを偲ぶメモリアルサイトです。皆様の想い出とともに",
+    "icon": "bi-flower1",
+    "stats": {
+      "comments_label": "件の想い出",
+      "images_label": "枚の写真"
+    }
+  },
+  "navigation": {
+    "about": "ラーメンNORIについて",
+    "comments": "ファンの声",
+    "gallery": "ギャラリー"
+  },
+  "sections": {
+    "about": {
+      "title": "ラーメンNORIについて",
+      "icon": "bi-person-heart"
+    },
+    "comments": {
+      "title": "ファンの声",
+      "description": "皆様から寄せられた、心温まる想い出の数々です。ぜひとも皆様の想い出の投稿をお願い致します。",
+      "icon": "bi-chat-quote",
+      "empty_message": "まだコメントがありません。",
+      "empty_submessage": "皆様からの想い出をお待ちしています。コメントフォームよりお願い致します。"
+    },
+    "gallery": {
+      "title": "ギャラリー",
+      "description": "思い出の写真をご覧ください。ぜひとも皆様の写真の投稿をお願い致します。",
+      "icon": "bi-images"
+    }
+  },
+  "footer": {
+    "text": "いつまでも心の中に。",
+    "icon": "bi-flower2",
+    "updated_label": "最終更新日"
+  },
+  "ui": {
+    "comment_author_icon": "bi-person-circle",
+    "comment_date_icon": "bi-clock",
+    "timeline_marker_icon": "bi-heart-fill",
+    "gallery_zoom_icon": "bi-zoom-in",
+    "empty_state_icon": "bi-chat-dots",
+    "modal_alt_text": "拡大画像",
+    "modal_close_label": "閉じる",
+    "photo_alt_prefix": "ラーメンNORIの想い出の写真"
+  }
+}

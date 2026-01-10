@@ -1,0 +1,38 @@
+# =============================================================================
+# Memorial Site - .gitignore
+# =============================================================================
+
+# Python 仮想環境
+venv/
+.venv/
+ENV/
+env/
+
+# Python キャッシュ
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 環境変数ファイル（機密情報を含む）
+.env.local
+.env
+
+# 生成されたファイル（GitHub Actions でビルドするため）
+public/
+
+# IDE / エディタ
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ログファイル
+*.log
+
+# 一時ファイル
+*.tmp
+*.temp

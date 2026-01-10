@@ -1,0 +1,97 @@
+# =============================================================================
+# GitHub Actions - メモリアルサイト ビルド & デプロイ
+# =============================================================================
+#
+# トリガー:
+#   - main ブランチへの push
+#   - 毎日 0:00 (JST 9:00) に自動実行
+#   - 手動実行（workflow_dispatch）
+#
+# 処理内容:
+#   1. Python 環境のセットアップ
+#   2. 依存ライブラリのインストール
+#   3. サイトのビルド（CSV取得含む）
+#   4. GitHub Pages へのデプロイ
+#
+
+name: Build and Deploy Memorial Site
+
+on:
+  # main ブランチへの push 時に実行
+  push:
+    branches:
+      - main
+  
+  # スケジュール実行（毎日 UTC 0:00 = JST 9:00）
+  schedule:
+    - cron: '0 0 * * *'
+  
+  # 手動実行を許可
+  workflow_dispatch:
+
+# 同時実行の制御（デプロイの競合を防ぐ）
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+# GitHub Pages デプロイ用の権限設定
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # ビルドジョブ
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. リポジトリのチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # 2. Python のセットアップ
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      # 3. 依存ライブラリのインストール
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      # 4. サイトのビルド
+      - name: Build site
+        run: python build.py
+        env:
+          # GitHub Secrets から CSV URL を取得（リポジトリの Settings → Secrets で設定）
+          CSV_URL: ${{ secrets.CSV_URL }}
+          PYTHONUNBUFFERED: 1
+      
+      # 5. GitHub Pages 用のアーティファクト準備
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      # 6. ビルド成果物のアップロード
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+
+  # デプロイジョブ
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    # GitHub Pages 環境へのデプロイ
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
