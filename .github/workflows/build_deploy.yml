@@ -22,9 +22,12 @@ on:
     branches:
       - main
   
-  # スケジュール実行（毎日 UTC 0:00 = JST 9:00）
+  # スケジュール実行（毎日 2回: JST 0:00, JST 12:00）
+  # JST 0:00  = UTC 15:00
+  # JST 12:00 = UTC 03:00
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 15 * * *'
+    - cron: '0 3 * * *'
   
   # 手動実行を許可
   workflow_dispatch:
