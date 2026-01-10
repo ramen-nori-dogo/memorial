@@ -52,10 +52,83 @@ OUTPUT_FORMAT = "webp"  # 出力フォーマット（webp または jpg）
 # 環境変数 CSV_URL で設定するか、コマンドライン引数 --csv-url で指定してください
 DEFAULT_CSV_URL = os.environ.get("CSV_URL", "")
 
+# 写真投稿フォーム用のGoogle スプレッドシート公開CSV URL（オプション）
+DEFAULT_PHOTO_URL = os.environ.get("PHOTO_URL", "")
+
 
 # =============================================================================
 # ユーティリティ関数
 # =============================================================================
+
+def normalize_form_df(df: pd.DataFrame, kind: str) -> pd.DataFrame:
+    """Googleフォーム由来のCSVを共通スキーマに正規化します。
+
+    共通スキーマ:
+      - timestamp: タイムスタンプ
+      - comment:   想い出本文
+      - name:      公開可能なお名前
+      - menu:      好きだったメニュー（コメントフォームのみ想定）
+      - photo:     写真URL（写真フォームのみ想定）
+
+    kind:
+      - "comments": コメント投稿フォーム
+      - "photos":   写真投稿フォーム
+    """
+    if df is None or df.empty:
+        return pd.DataFrame(columns=["timestamp", "comment", "name", "menu", "photo"])
+
+    cols = [str(c) for c in df.columns]
+
+    def find_col(*keywords: str) -> str | None:
+        for c in cols:
+            for kw in keywords:
+                if kw and kw in c:
+                    return c
+        return None
+
+    # できるだけ列名で拾う（日本語/英語の揺れに耐える）
+    ts_col = find_col("タイムスタンプ", "Timestamp", "timestamp")
+    name_col = find_col("公開可能なお名前", "ニックネーム", "お名前", "Name", "name")
+
+    if kind == "comments":
+        # コメント本文は「想い出/思い出」系を優先。汎用の "comment" も許容。
+        comment_col = find_col(
+            "店主", "ラーメン", "想い出（必須）", "想い出", "思い出", "まつわる思い出", "コメント", "comment"
+        )
+        menu_col = find_col("好きだったメニュー", "メニュー", "menu")
+        # コメントフォーム側に写真列が混ざっている可能性もあるため拾っておく
+        photo_col = find_col("思い出の写真", "想い出の写真", "写真", "image", "photo")
+
+    else:
+        # photos
+        # 写真フォームの本文は「写真にまつわる想い出/思い出」を最優先。汎用の「写真」は入れない（誤爆防止）。
+        comment_col = find_col(
+            "写真にまつわる想い出", "写真にまつわる思い出", "写真にまつわる", "まつわる想い出", "まつわる思い出", "comment"
+        )
+        # 写真URL列は「想い出の写真/思い出の写真」を最優先。次に "photo/image"、最後に汎用の「写真」。
+        # 写真URL列は列名を決め打ちする（Googleフォーム仕様に依存）
+        photo_col = "想い出の写真"
+        if photo_col not in df.columns:
+            raise KeyError(f"PHOTO_URL 列 '{photo_col}' が見つかりません。columns={cols}")
+        menu_col = find_col("好きだったメニュー", "メニュー", "menu")  # もし混ざってても拾う
+
+    # 列名が取れない場合は、従来の並び（先頭から）にフォールバック
+    def safe_iloc(i: int) -> pd.Series:
+        if df.shape[1] > i:
+            return df.iloc[:, i]
+        return pd.Series([""] * len(df))
+
+    out = pd.DataFrame({
+        "timestamp": df[ts_col] if ts_col else safe_iloc(0),
+        "comment": df[comment_col] if comment_col else safe_iloc(1),
+        "name": df[name_col] if name_col else safe_iloc(2),
+        "menu": df[menu_col] if menu_col else pd.Series([""] * len(df)),
+        "photo": df[photo_col] if photo_col else pd.Series([""] * len(df)),
+    })
+
+    # NaNを空文字に寄せる（後段の処理を単純化）
+    out = out.fillna("")
+    return out
 
 def ensure_directories():
     """
@@ -118,6 +191,7 @@ def fetch_csv_data(csv_url: str) -> pd.DataFrame:
         df.to_csv(cache_path, index=False, encoding="utf-8")
         print(f"✓ CSVデータを保存: {cache_path}")
         print(f"  → {len(df)} 件のコメントを取得しました")
+        print(f"df(Comments):\n{df}")
         
         return df
         
@@ -148,46 +222,138 @@ def load_local_csv() -> pd.DataFrame:
     return pd.DataFrame()
 
 
-def download_image_from_google_drive(url: str, output_path: Path) -> bool:
+def fetch_and_merge_csv_data(csv_url: str, photo_url: str = "") -> pd.DataFrame:
     """
-    Google DriveのURLから画像をダウンロードします。
+    コメントフォームと写真フォームの両方のCSVを取得してマージします。
     
     Args:
-        url: Google DriveのURL
-        output_path: 保存先のパス
+        csv_url: コメント投稿フォームのCSV URL
+        photo_url: 写真投稿フォーム用のCSV URL（オプション）
     
     Returns:
-        bool: 成功したらTrue
+        pandas.DataFrame: マージされたデータ
+    """
+    # コメントCSVを取得
+    df_comments = fetch_csv_data(csv_url)
+    # コメントCSVを共通スキーマに正規化
+    df_comments_norm = normalize_form_df(df_comments, "comments")
+    
+    # 写真投稿フォームのCSVも取得（URLが設定されている場合）
+    if photo_url and photo_url.strip():
+        print(f"\n📥 写真投稿フォームのCSVデータを取得中...")
+        try:
+            response = requests.get(photo_url, timeout=30)
+            response.raise_for_status()
+            response.encoding = 'utf-8'
+            
+            from io import StringIO
+            df_photos = pd.read_csv(StringIO(response.text), encoding='utf-8')
+            
+            # 写真投稿データを保存
+            photo_cache_path = DATA_DIR / "photos.csv"
+            df_photos.to_csv(photo_cache_path, index=False, encoding="utf-8")
+            print(f"✓ 写真投稿CSVを保存: {photo_cache_path}")
+            print(f"  → {len(df_photos)} 件の写真投稿を取得しました")
+            print(f"df(Photos):\n{df_photos}")
+            
+            # 写真投稿CSVを共通スキーマに正規化
+            df_photos_norm = normalize_form_df(df_photos, "photos")
+            # 両方のDataFrameをマージ（列名が同じものは同じ列に、片方にない列は空文字）
+            if not df_photos_norm.empty:
+                df_merged = pd.concat([df_comments_norm, df_photos_norm], ignore_index=True, sort=False)
+                print(f"✓ コメントと写真投稿をマージ: 合計 {len(df_merged)} 件")
+                print("df_merged:\n", df_merged)
+                df_merged.to_csv(DATA_DIR / "merged.csv", index=False, encoding="utf-8")
+                return df_merged
+                
+        except requests.RequestException as e:
+            print(f"⚠️ 写真投稿CSVの取得に失敗しました: {e}")
+            print(f"  → コメントのみを使用します")
+    
+    return df_comments_norm
+
+
+def download_image_from_google_drive(url: str, output_path: Path) -> bool:
+    """Google DriveのURL（または直接画像URL）から画像をダウンロードします。
+
+    注意:
+      - Driveの共有設定が「リンクを知っている全員」等で公開されていない場合は取得できません。
+      - 大きいファイル等で Google のウイルススキャン確認（confirm=...）が必要な場合は2段階で取得します。
     """
     try:
-        # Google DriveのURL形式を変換
-        # https://drive.google.com/open?id=FILE_ID
-        # または https://drive.google.com/file/d/FILE_ID/view
-        # → https://drive.google.com/uc?export=download&id=FILE_ID
-        
+        url = str(url).strip()
+        if not url:
+            return False
+
+        # 1) 直接画像URL（googleusercontent等）はそのままGET
+        if "drive.google.com" not in url:
+            resp = requests.get(url, timeout=30)
+            resp.raise_for_status()
+            ct = (resp.headers.get("Content-Type") or "").lower()
+            if "text/html" in ct:
+                print(f"  ✗ 画像ではなくHTMLが返りました（アクセス権/URLを確認）: {url}")
+                return False
+            with open(output_path, "wb") as f:
+                f.write(resp.content)
+            return True
+
+        # 2) Google Drive URL から file_id を抽出
         file_id = None
         if "id=" in url:
             file_id = url.split("id=")[1].split("&")[0]
         elif "/d/" in url:
             file_id = url.split("/d/")[1].split("/")[0]
-        
+        elif "/file/d/" in url:
+            file_id = url.split("/file/d/")[1].split("/")[0]
+        elif "/uc?" in url and "id=" in url:
+            file_id = url.split("id=")[1].split("&")[0]
+
         if not file_id:
             print(f"  ✗ URLからファイルIDを抽出できませんでした: {url}")
             return False
-        
-        # ダウンロード用URLを構築
+
+        session = requests.Session()
+
+        def _get_confirm_token(r: requests.Response) -> str | None:
+            # cookie に confirm が付くことがある
+            for k, v in r.cookies.items():
+                if k.startswith("download_warning") and v:
+                    return v
+            # HTML内に confirm= が埋め込まれるケース
+            import re
+            m = re.search(r"confirm=([0-9A-Za-z_]+)", r.text or "")
+            if m:
+                return m.group(1)
+            return None
+
+        # まずは通常のダウンロードURLへ
         download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
-        
-        # 画像をダウンロード
-        response = requests.get(download_url, timeout=30)
-        response.raise_for_status()
-        
-        # ファイルに保存
+        r = session.get(download_url, timeout=30)
+        r.raise_for_status()
+
+        ct = (r.headers.get("Content-Type") or "").lower()
+
+        # confirm が必要な場合（ウイルススキャン/サイズ等）
+        if "text/html" in ct:
+            token = _get_confirm_token(r)
+            if token:
+                r = session.get(download_url + f"&confirm={token}", timeout=30)
+                r.raise_for_status()
+                ct = (r.headers.get("Content-Type") or "").lower()
+
+        # それでもHTMLなら、権限不足 or ログイン必須
+        if "text/html" in ct:
+            print(f"  ✗ Driveから画像を取得できません（共有設定/ログイン必須の可能性）: {url}")
+            return False
+
         with open(output_path, "wb") as f:
-            f.write(response.content)
-        
+            f.write(r.content)
+
         return True
-        
+
+    except requests.RequestException as e:
+        print(f"  ✗ ダウンロード失敗(HTTP): {e}")
+        return False
     except Exception as e:
         print(f"  ✗ ダウンロード失敗: {e}")
         return False
@@ -208,29 +374,50 @@ def download_images_from_csv(df: pd.DataFrame) -> int:
     
     print(f"\n📥 CSV内の画像をダウンロード中...")
     
+    # 写真URLのカラムを探す（正規化後は photo を優先）
+    if "photo" in df.columns:
+        photo_col_idx = list(df.columns).index("photo")
+    else:
+        photo_col_idx = None
+        photo_col_names = ['写真', 'photo', 'Photo', '画像', 'image', 'Image']
+        for idx, col_name in enumerate(df.columns):
+            if any(keyword in str(col_name) for keyword in photo_col_names):
+                photo_col_idx = idx
+                break
+    
+    # 写真列が見つからない場合
+    if photo_col_idx is None:
+        print(f"  ℹ️ CSVに写真列が見つかりませんでした。スキップします。")
+        return 0
+    
     RAW_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
     downloaded_count = 0
     
     for idx, row in df.iterrows():
-        # 5列目（インデックス4）が写真URL
-        if len(row) <= 4:
+        # 写真URLのカラムにアクセス
+        if len(row) <= photo_col_idx:
             continue
-        
-        photo_url = row.iloc[4]
-        
-        # URLが空でない場合
+
+        photo_url = row.iloc[photo_col_idx]
+
+        # URLが空でない場合で、実際にURLらしい文字列の場合のみダウンロード
         if pd.notna(photo_url) and str(photo_url).strip() and str(photo_url) != "nan":
+            photo_url_str = str(photo_url).strip()
+            if not (photo_url_str.startswith('http') or 'drive.google.com' in photo_url_str):
+                # 共有URLではない値（ファイル名など）の可能性
+                continue
+
             # ファイル名を生成（タイムスタンプ + 行番号）
-            timestamp = row.iloc[0] if len(row) > 0 else ""
+            timestamp = row.get("timestamp", "") if "timestamp" in df.columns else (row.iloc[0] if len(row) > 0 else "")
             safe_timestamp = str(timestamp).replace("/", "").replace(":", "").replace(" ", "_")
             filename = f"photo_{safe_timestamp}_{idx}.jpg"
             output_path = RAW_IMAGES_DIR / filename
-            
+
             # 既にダウンロード済みならスキップ
             if output_path.exists():
                 print(f"  ⊙ スキップ（既存）: {filename}")
                 continue
-            
+
             print(f"  ⬇ ダウンロード中: {filename}")
             if download_image_from_google_drive(str(photo_url), output_path):
                 print(f"  ✓ 保存完了: {filename}")
@@ -388,27 +575,43 @@ def prepare_comments_data(df: pd.DataFrame) -> list:
     if df.empty:
         return comments
     
-    # Googleフォームの列は以下の順序:
-    # 0: タイムスタンプ
-    # 1: 店主様やラーメンNORIにまつわる思い出を教えて下さい（必須）
-    # 2: 公開可能なお名前（ニックネーム、任意）
-    # 3: 好きだったメニューを教えて下さい（複数可、任意）
-    # 4: 思い出の写真（1枚/1MBまで、任意）
-    
+    # 正規化済みスキーマがあればそれを優先
+    has_normalized = all(c in df.columns for c in ["timestamp", "comment", "name", "menu", "photo"])
+
     for idx, row in df.iterrows():
-        # 列インデックスで直接アクセス
-        timestamp = row.iloc[0] if len(row) > 0 else ""
-        content = row.iloc[1] if len(row) > 1 else ""
-        name = row.iloc[2] if len(row) > 2 else "匿名"
-        menu = row.iloc[3] if len(row) > 3 else ""
-        photo_url = row.iloc[4] if len(row) > 4 else ""
-        
+        if has_normalized:
+            timestamp = row.get("timestamp", "")
+            content = row.get("comment", "")
+            name = row.get("name", "")
+            menu = row.get("menu", "")
+            photo_url = row.get("photo", "")
+        else:
+            # 旧来の列並び（フォールバック）
+            timestamp = row.iloc[0] if len(row) > 0 else ""
+            content = row.iloc[1] if len(row) > 1 else ""
+            name = row.iloc[2] if len(row) > 2 else "匿名"
+            menu = row.iloc[3] if len(row) > 3 else ""
+
+            # 写真URLのカラムを探す
+            photo_url = ""
+            photo_col_idx = None
+            photo_col_names = ['写真', 'photo', 'Photo', '画像', 'image', 'Image']
+            for c_idx, col_name in enumerate(df.columns):
+                if any(keyword in str(col_name) for keyword in photo_col_names):
+                    photo_col_idx = c_idx
+                    break
+            if photo_col_idx is not None and len(row) > photo_col_idx:
+                photo_url = row.iloc[photo_col_idx]
+
         # 写真のローカルパスを特定（ダウンロード済みの画像）
         photo_filename = None
         if pd.notna(photo_url) and str(photo_url).strip() and str(photo_url) != "nan":
-            # タイムスタンプベースのファイル名を生成
-            safe_timestamp = str(timestamp).replace("/", "").replace(":", "").replace(" ", "_")
-            photo_filename = f"photo_{safe_timestamp}_{idx}.webp"
+            photo_url_str = str(photo_url).strip()
+            # URLらしい文字列の場合のみファイル名を生成
+            if photo_url_str.startswith('http') or 'drive.google.com' in photo_url_str:
+                # タイムスタンプベースのファイル名を生成
+                safe_timestamp = str(timestamp).replace("/", "").replace(":", "").replace(" ", "_")
+                photo_filename = f"photo_{safe_timestamp}_{idx}.webp"
         
         comment = {
             "timestamp": timestamp,
@@ -474,6 +677,7 @@ def generate_html(comments: list, images: list, about_html: str, config: dict, s
         "sections": config.get("sections", {}),
         "footer": config.get("footer", {}),
         "ui": config.get("ui", {}),
+        "config": config,
         "comments": comments,
         "images": images,
         "about_html": about_html,
@@ -537,7 +741,13 @@ def main():
         "--csv-url",
         type=str,
         default=DEFAULT_CSV_URL,
-        help="Google スプレッドシートのCSV公開URL"
+        help="Google スプレッドシートのCSV公開URL（コメント投稿フォーム）"
+    )
+    parser.add_argument(
+        "--photo-url",
+        type=str,
+        default=DEFAULT_PHOTO_URL,
+        help="Google スプレッドシートのCSV公開URL（写真投稿フォーム・オプション）"
     )
     parser.add_argument(
         "--skip-fetch",
@@ -575,7 +785,8 @@ def main():
             print("   3. ローカルキャッシュを使用: python build.py --skip-fetch")
             sys.exit(1)
         
-        df = fetch_csv_data(args.csv_url)
+        # コメントと写真投稿の両方のCSVを取得してマージ
+        df = fetch_and_merge_csv_data(args.csv_url, args.photo_url)
     
     # 4. CSV内の画像をダウンロード（オプション）
     if not args.skip_download:

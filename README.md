@@ -3,6 +3,16 @@
 
 故人のラーメン店主を偲ぶメモリアルサイトです。Googleフォームで集めた「ファンの声」と「思い出の写真」を掲載します。
 
+## ✨ 特徴
+
+* **2つの投稿フォーム:**
+  * **想い出投稿フォーム:** ログインなしで誰でも気軽にコメント投稿可能
+  * **写真投稿フォーム:** Googleログインが必要（不適切な投稿を防ぐため）
+* **自動マージ:** 両方のフォームからの投稿を自動的に一覧表示
+* **WebP最適化:** 画像を自動的にWebP形式に変換し、70-90%ファイルサイズ削減
+* **SNSスタイルUI:** 直感的な投稿ボタンとタイムライン表示
+* **完全自動化:** GitHub Actionsで自動ビルド＆デプロイ
+
 ## 🚀 セットアップ
 
 ### 1. 初期セットアップ
@@ -48,6 +58,13 @@ CSV URLは**環境変数**で管理します（非公開情報のため）。
 `.env.local` ファイルを作成して、CSV URLを設定してください：
 
 ```bash
+# コメント投稿フォーム用（必須）
+CSV_URL=https://docs.google.com/spreadsheets/d/e/YOUR_SPREADSHEET_ID/pub?output=csv
+
+# 写真投稿フォーム用（オプション）
+# ※写真投稿フォームはGoogleログインが必要
+PHOTO_URL=https://docs.google.com/spreadsheets/d/e/YOUR_PHOTO_SPREADSHEET_ID/pub?output=csv
+```
 # env.sample をコピーして .env.local を作成
 cp env.sample .env.local
 
@@ -63,6 +80,10 @@ CSV_URL=https://docs.google.com/spreadsheets/d/e/YOUR_SPREADSHEET_ID/pub?output=
 2. **New repository secret** をクリック
 3. 以下の情報を入力：
    - **Name**: `CSV_URL`
+   - **Secret**: コメント投稿フォームのスプレッドシートCSV URL
+4. （オプション）写真投稿フォームを使用する場合は、同様に追加：
+   - **Name**: `PHOTO_URL`
+   - **Secret**: 写真投稿フォームのスプレッドシートCSV URL
    - **Secret**: `https://docs.google.com/spreadsheets/d/e/YOUR_SPREADSHEET_ID/pub?output=csv`
 4. **Add secret** をクリック
 

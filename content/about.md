@@ -4,7 +4,7 @@
 
 - X: https://x.com/nori3515
 - Map
-  - [道後祝谷時代](https://www.google.com/maps/place/%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B3+NORI/@33.8505917,132.7850923,1037m/data=!3m1!1e3!4m14!1m7!3m6!1s0x354fef5c8d03f0b1:0xa3aeee3e7e331d5!2z44Op44O844Oh44OzIE5PUkk!8m2!3d33.8505873!4d132.7876726!16s%2Fg%2F1tj1_bq1!3m5!1s0x354fef5c8d03f0b1:0xa3aeee3e7e331d5!8m2!3d33.8505873!4d132.7876726!16s%2Fg%2F1tj1_bq1?entry=ttu&g_ep=EgoyMDI2MDEwNy4wIKXMDSoKLDEwMDc5MjA3MUgBUAM%3D)
+  - [道後湯之町（最後）時代](https://www.google.com/maps/place/%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B3+NORI/@33.8505917,132.7850923,1037m/data=!3m1!1e3!4m14!1m7!3m6!1s0x354fef5c8d03f0b1:0xa3aeee3e7e331d5!2z44Op44O844Oh44OzIE5PUkk!8m2!3d33.8505873!4d132.7876726!16s%2Fg%2F1tj1_bq1!3m5!1s0x354fef5c8d03f0b1:0xa3aeee3e7e331d5!8m2!3d33.8505873!4d132.7876726!16s%2Fg%2F1tj1_bq1?entry=ttu&g_ep=EgoyMDI2MDEwNy4wIKXMDSoKLDEwMDc5MjA3MUgBUAM%3D)
   - [道後祝谷時代](https://maps.app.goo.gl/V2BcTA1jE3LaTMqD9)
   - [朝生田時代](https://maps.app.goo.gl/kWy5oJ41j9ouX6wM7)
 - テーマ曲: [I LOVE NORI](https://soundcloud.com/tsuru-mitsumune/i-love-nori?utm_source=clipboard&utm_campaign=wtshare&utm_medium=widget&utm_content=https%253A%252F%252Fsoundcloud.com%252Ftsuru-mitsumune%252Fi-love-nori)
@@ -36,13 +36,13 @@
 
 ![道後湯之町時代のラーメンNORI(2024)](static/images/ramen_nori_2024.webp)
 
-### 店主と共に（2025年）
+<!-- ### 店主と共に（2025年） -->
 
-![店主と共に(2025)](static/images/ramen_nori_2025.webp)
+<!-- ![店主と共に(2025)](static/images/ramen_nori_2025.webp) -->
 
 ---
 
-優しい塩ラーメンが人気の知る人ぞ知る名店でしたが、店主のNORIさんは、2026年1月上旬に逝去され、帰らぬ人となりました。
+優しい塩ラーメンが人気の知る人ぞ知る名店でしたが、店主のNORIさんは、2026年1月上旬に残念ながら逝去され閉店となりました。
 
 本サイトは多くの方に愛された店主のNORIさん、ラーメンNORIの優しいラーメンの想い出を残すために作りました。ぜひとも皆様の想い出を以下のURLより投稿共有をよろしくお願い致します。
 
@@ -52,13 +52,13 @@
 [想い出コメント投稿フォーム](https://forms.gle/AivdT7mFiZXj9QFPA)
 
 想い出写真の投稿（Googleログイン必要）
-[想い出写真投稿フォーム](https://forms.gle/LugPHUZv7fiqaGGT9)
+[想い出写真投稿フォーム](https://docs.google.com/forms/d/e/1FAIpQLSdR8Xc5psWj5AKNPbjBmJL5bOw3RjFfDmo4AriAhAYMRtNNtA/viewform?usp=dialog)
 
 
 ---
 
 ## 最後に
 
-本サイトは、*それなりに* ラーメンNORIを愛した管理人が急遽作成しました。私以上にラーメンNORIを愛した方、店主のNORIさんと仲良かった方は沢山いらっしゃると思います。もしそのような真のファンサイトを作られるのであれば、いつでもこちらはクローズないしはデータ移行をお手伝いしますのでご連絡ください
+本サイトは、*それなりに* ラーメンNORIを愛した管理人が急遽作成しました。私以上にラーメンNORIを愛した方、店主のNORIさんと仲良かった方は沢山いらっしゃると思います。もしそのような方々がファンサイトを作られるのであれば、いつでもこちらはクローズないしはデータをお譲りしますのでご連絡ください。
 
 もし店主の思い出を詳しく教えてくれる方いらっしゃれば、想い出投稿フォームより投稿ください。

@@ -1,7 +1,7 @@
 {
   "site": {
     "title": "ラーメンNORI - メモリアルサイト",
-    "description": "愛媛県松山市道後にあった「ラーメンNORI」と店主のNORIさんを偲ぶメモリアルサイトです。皆様の想い出とともに",
+    "description": "愛媛県松山市の道後にあった「ラーメンNORI」と店主のNORIさんを偲ぶメモリアルサイトです。皆様の想い出とともに",
     "shop_name": "ラーメンNORI - 世界で一番優しいラーメン"
   },
   "hero": {
@@ -13,9 +13,14 @@
       "images_label": "枚の写真"
     }
   },
+  "forms": {
+    "comment_url": "https://forms.gle/AivdT7mFiZXj9QFPA",
+    "photo_url": "https://forms.gle/jJtEpnva1EeGd3a66",
+    "photo_note": "写真投稿にはGoogleログインが必要です"
+  },
   "navigation": {
     "about": "ラーメンNORIについて",
-    "comments": "ファンの声",
+    "comments": "NORIを愛した方々の想い出",
     "gallery": "ギャラリー"
   },
   "sections": {
@@ -24,20 +29,20 @@
       "icon": "bi-person-heart"
     },
     "comments": {
-      "title": "ファンの声",
-      "description": "皆様から寄せられた、NORIさんとの心温まる想い出の数々です。ぜひとも皆様の想い出の共有をお願いします。",
+      "title": "NORIを愛した方々の想い出",
+      "description": "皆様から寄せられた、ラーメンNORIとNORIさんとのエピソードです。ぜひとも皆様の想い出の共有をお願いします。",
       "icon": "bi-chat-quote",
       "empty_message": "まだコメントがありません。",
-      "empty_submessage": "皆様からの想い出をお待ちしています。想い出投稿フォームよりお願い致します。"
+      "empty_submessage": "皆様からの想い出をご覧ください。"
     },
     "gallery": {
       "title": "ギャラリー",
-      "description": "思い出の写真をご覧ください。ぜひとも皆様の写真の投稿をお願い致します。",
+      "description": "皆様の想い出の写真をご覧ください。",
       "icon": "bi-images"
     }
   },
   "footer": {
-    "text": "いつまでも心の中に。",
+    "text": "今までありがとう... いつまでも心の中に NORIさん。",
     "icon": "bi-flower2",
     "updated_label": "最終更新日"
   },

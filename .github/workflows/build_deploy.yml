@@ -70,6 +70,8 @@ jobs:
         env:
           # GitHub Secrets から CSV URL を取得（リポジトリの Settings → Secrets で設定）
           CSV_URL: ${{ secrets.CSV_URL }}
+          # 写真投稿フォーム用のCSV URL（オプション）
+          PHOTO_URL: ${{ secrets.PHOTO_URL }}
           PYTHONUNBUFFERED: 1
       
       # 5. GitHub Pages 用のアーティファクト準備

@@ -25,10 +25,18 @@
                     </span>
                 </div>
                 <div class="hero-cta mt-4">
-                    <a href="https://forms.gle/AivdT7mFiZXj9QFPA" target="_blank" class="btn-submit-memory">
+                    <a href="{{ config.forms.comment_url|default('') }}" target="_blank" class="btn-submit-memory me-2">
                         <i class="bi bi-pen"></i>
-                        想い出を投稿する
+                        想い出を投稿
                     </a>
+                    <a href="{{ config.forms.photo_url|default('') }}" target="_blank" class="btn-submit-photo">
+                        <i class="bi bi-camera"></i>
+                        写真を投稿
+                    </a>
+                    <p class="text-white-50 mt-2 small">
+                        <i class="bi bi-info-circle"></i>
+                        {{ config.forms.photo_note|default('写真投稿にはGoogleログインが必要です') }}
+                    </p>
                 </div>
             </div>
         </div>
@@ -183,7 +191,7 @@
                         <i class="{{ ui.empty_state_icon|default('bi-chat-dots') }} empty-icon"></i>
                         <p>{{ sections.comments.empty_message|default('まだコメントがありません。') }}</p>
                         <p class="text-muted">{{ sections.comments.empty_submessage|default('皆様からの想い出をお待ちしています。') }}</p>
-                        <a href="https://forms.gle/AivdT7mFiZXj9QFPA" target="_blank" class="btn-submit-memory mt-3">
+                        <a href="{{ config.forms.comment_url|default('') }}" target="_blank" class="btn-submit-memory mt-3">
                             <i class="bi bi-pen"></i>
                             想い出を投稿する
                         </a>
@@ -254,9 +262,14 @@
 </div>
 
 <!-- フローティング投稿ボタン -->
-<a href="https://forms.gle/AivdT7mFiZXj9QFPA" target="_blank" class="floating-submit-btn" aria-label="想い出を投稿する">
-    <i class="bi bi-pen-fill"></i>
-</a>
+<div class="floating-buttons">
+    <a href="{{ config.forms.comment_url|default('') }}" target="_blank" class="floating-submit-btn floating-comment-btn" aria-label="想い出を投稿する">
+        <i class="bi bi-pen-fill"></i>
+    </a>
+    <a href="{{ config.forms.photo_url|default('') }}" target="_blank" class="floating-submit-btn floating-photo-btn" aria-label="{{ config.forms.photo_note|default('写真を投稿する（Googleログイン必要）') }}">
+        <i class="bi bi-camera-fill"></i>
+    </a>
+</div>
 
 {% endblock %}
 
