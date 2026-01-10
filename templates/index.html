@@ -75,6 +75,45 @@
                         </p>
                         {% endif %}
                     </div>
+                    
+                    {% if store_history %}
+                    <!-- 店舗の変遷タブ -->
+                    <div class="store-history-section mt-4">
+                        <h3 class="text-center mb-4">
+                            <i class="bi-shop"></i> 店舗の変遷
+                        </h3>
+                        <ul class="nav nav-tabs nav-fill mb-3" id="storeHistoryTabs" role="tablist">
+                            {% for store in store_history %}
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {% if loop.first %}active{% endif %}" 
+                                        id="{{ store.id }}-tab" 
+                                        data-bs-toggle="tab" 
+                                        data-bs-target="#{{ store.id }}" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="{{ store.id }}" 
+                                        aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+                                    {{ store.title }}
+                                </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="tab-content" id="storeHistoryTabContent">
+                            {% for store in store_history %}
+                            <div class="tab-pane fade {% if loop.first %}show active{% endif %}" 
+                                 id="{{ store.id }}" 
+                                 role="tabpanel" 
+                                 aria-labelledby="{{ store.id }}-tab">
+                                <div class="store-image-container">
+                                    <img src="{{ store.image }}" 
+                                         alt="{{ store.alt }}" 
+                                         class="store-image">
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -115,6 +154,17 @@
                         </div>
                         <div class="comment-body">
                             <p>{{ comment.content }}</p>
+                            
+                            {% if comment.photo_filename %}
+                            <div class="comment-photo">
+                                <a href="static/images/{{ comment.photo_filename }}" data-bs-toggle="modal" data-bs-target="#imageModal" data-image="static/images/{{ comment.photo_filename }}">
+                                    <img src="static/images/{{ comment.photo_filename }}" alt="{{ comment.name }}さんの写真" loading="lazy">
+                                    <div class="photo-overlay">
+                                        <i class="{{ ui.gallery_zoom_icon|default('bi-zoom-in') }}"></i>
+                                    </div>
+                                </a>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

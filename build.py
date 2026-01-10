@@ -324,6 +324,54 @@ def load_markdown_content(filename: str) -> str:
     return html_content
 
 
+def extract_store_history(about_html: str) -> tuple:
+    """
+    店舗の変遷情報をHTMLから抽出します。
+    
+    Args:
+        about_html: about.mdから変換されたHTML
+    
+    Returns:
+        tuple: (店舗変遷を除いたHTML, 店舗変遷のリスト)
+    """
+    import re
+    
+    # 「店舗の変遷」セクションを抽出
+    history_pattern = r'<h2>店舗の変遷</h2>(.*?)<hr\s*/>'
+    match = re.search(history_pattern, about_html, re.DOTALL)
+    
+    if not match:
+        return about_html, []
+    
+    history_section = match.group(1)
+    about_without_history = about_html.replace(match.group(0), '<hr />')
+    
+    # 各店舗の情報を抽出（h3とimgを別々に）
+    stores = []
+    
+    # h3タグを探す
+    h3_pattern = r'<h3>(.*?)</h3>'
+    img_pattern = r'<img\s+alt="(.*?)"\s+src="(.*?)"\s*/>'
+    
+    h3_matches = list(re.finditer(h3_pattern, history_section))
+    img_matches = list(re.finditer(img_pattern, history_section))
+    
+    # h3とimgを順番にマッチング
+    for idx, (h3_match, img_match) in enumerate(zip(h3_matches, img_matches)):
+        title = h3_match.group(1)
+        alt_text = img_match.group(1)
+        image_url = img_match.group(2)
+        
+        stores.append({
+            'id': f'store{idx}',
+            'title': title,
+            'alt': alt_text,
+            'image': image_url
+        })
+    
+    return about_without_history, stores
+
+
 def prepare_comments_data(df: pd.DataFrame) -> list:
     """
     DataFrameをテンプレート用の辞書リストに変換します。
@@ -347,7 +395,7 @@ def prepare_comments_data(df: pd.DataFrame) -> list:
     # 3: 好きだったメニューを教えて下さい（複数可、任意）
     # 4: 思い出の写真（1枚/1MBまで、任意）
     
-    for _, row in df.iterrows():
+    for idx, row in df.iterrows():
         # 列インデックスで直接アクセス
         timestamp = row.iloc[0] if len(row) > 0 else ""
         content = row.iloc[1] if len(row) > 1 else ""
@@ -355,11 +403,19 @@ def prepare_comments_data(df: pd.DataFrame) -> list:
         menu = row.iloc[3] if len(row) > 3 else ""
         photo_url = row.iloc[4] if len(row) > 4 else ""
         
+        # 写真のローカルパスを特定（ダウンロード済みの画像）
+        photo_filename = None
+        if pd.notna(photo_url) and str(photo_url).strip() and str(photo_url) != "nan":
+            # タイムスタンプベースのファイル名を生成
+            safe_timestamp = str(timestamp).replace("/", "").replace(":", "").replace(" ", "_")
+            photo_filename = f"photo_{safe_timestamp}_{idx}.webp"
+        
         comment = {
             "timestamp": timestamp,
             "content": str(content),
             "menu": str(menu),
             "photo_url": str(photo_url),
+            "photo_filename": photo_filename,  # ローカル画像ファイル名を追加
             "name": str(name)
         }
         
@@ -386,7 +442,7 @@ def prepare_comments_data(df: pd.DataFrame) -> list:
     return comments
 
 
-def generate_html(comments: list, images: list, about_html: str, config: dict):
+def generate_html(comments: list, images: list, about_html: str, config: dict, store_history: list = None):
     """
     Jinja2テンプレートを使用してHTMLを生成します。
     
@@ -395,6 +451,7 @@ def generate_html(comments: list, images: list, about_html: str, config: dict):
         images: 画像ファイル名のリスト
         about_html: 「店主について」のHTML
         config: 設定情報の辞書
+        store_history: 店舗変遷データのリスト
     """
     print(f"\n📝 HTMLを生成中...")
     
@@ -420,6 +477,7 @@ def generate_html(comments: list, images: list, about_html: str, config: dict):
         "comments": comments,
         "images": images,
         "about_html": about_html,
+        "store_history": store_history or [],
         "generated_at": datetime.now().strftime("%Y年%m月%d日 %H:%M"),
         "comment_count": len(comments),
         "image_count": len(images),
@@ -529,11 +587,14 @@ def main():
     # 6. Markdownコンテンツを読み込み
     about_html = load_markdown_content("about.md")
     
-    # 7. コメントデータを準備
+    # 7. 店舗変遷を抽出
+    about_html, store_history = extract_store_history(about_html)
+    
+    # 8. コメントデータを準備
     comments = prepare_comments_data(df)
     
-    # 8. HTMLを生成
-    generate_html(comments, images, about_html, config)
+    # 9. HTMLを生成
+    generate_html(comments, images, about_html, config, store_history)
     
     print("\n" + "=" * 60)
     print("✨ ビルド完了!")

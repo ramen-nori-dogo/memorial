@@ -39,6 +39,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 jobs:
   # ビルドジョブ
@@ -74,6 +75,8 @@ jobs:
       # 5. GitHub Pages 用のアーティファクト準備
       - name: Setup Pages
         uses: actions/configure-pages@v4
+        with:
+          enablement: true
       
       # 6. ビルド成果物のアップロード
       - name: Upload artifact
