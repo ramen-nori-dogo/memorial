@@ -24,6 +24,12 @@
                         {{ image_count }} {{ hero.stats.images_label|default('枚の写真') }}
                     </span>
                 </div>
+                <div class="hero-cta mt-4">
+                    <a href="https://forms.gle/AivdT7mFiZXj9QFPA" target="_blank" class="btn-submit-memory">
+                        <i class="bi bi-pen"></i>
+                        想い出を投稿する
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -177,6 +183,10 @@
                         <i class="{{ ui.empty_state_icon|default('bi-chat-dots') }} empty-icon"></i>
                         <p>{{ sections.comments.empty_message|default('まだコメントがありません。') }}</p>
                         <p class="text-muted">{{ sections.comments.empty_submessage|default('皆様からの想い出をお待ちしています。') }}</p>
+                        <a href="https://forms.gle/AivdT7mFiZXj9QFPA" target="_blank" class="btn-submit-memory mt-3">
+                            <i class="bi bi-pen"></i>
+                            想い出を投稿する
+                        </a>
                     </div>
                 </div>
             </div>
@@ -242,6 +252,12 @@
         </div>
     </div>
 </div>
+
+<!-- フローティング投稿ボタン -->
+<a href="https://forms.gle/AivdT7mFiZXj9QFPA" target="_blank" class="floating-submit-btn" aria-label="想い出を投稿する">
+    <i class="bi bi-pen-fill"></i>
+</a>
+
 {% endblock %}
 
 {% block extra_scripts %}
