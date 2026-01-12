@@ -87,31 +87,27 @@ def normalize_form_df(df: pd.DataFrame, kind: str) -> pd.DataFrame:
         return None
 
     # できるだけ列名で拾う（日本語/英語の揺れに耐える）
-    ts_col = find_col("タイムスタンプ", "Timestamp", "timestamp")
-    name_col = find_col("公開可能なお名前", "ニックネーム", "お名前", "Name", "name")
+    ts_col = find_col("タイムスタンプ")
+    name_col = find_col("公開可能なお名前（ニックネーム、任意）")
 
     if kind == "comments":
         # コメント本文は「想い出/思い出」系を優先。汎用の "comment" も許容。
         comment_col = find_col(
-            "店主", "ラーメン", "想い出（必須）", "想い出", "思い出", "まつわる思い出", "コメント", "comment"
+            "想い出（必須）"
         )
-        menu_col = find_col("好きだったメニュー", "メニュー", "menu")
+        menu_col = find_col("好きだったメニュー（複数可、任意）")
         # コメントフォーム側に写真列が混ざっている可能性もあるため拾っておく
-        photo_col = find_col("思い出の写真", "想い出の写真", "写真", "image", "photo")
+        photo_col = find_col("想い出の写真")
 
     else:
         # photos
-        # 写真フォームの本文は「写真にまつわる想い出/思い出」を最優先。汎用の「写真」は入れない（誤爆防止）。
         comment_col = find_col(
-            "写真にまつわる想い出", "写真にまつわる思い出", "写真にまつわる", "まつわる想い出", "まつわる思い出", "comment"
+            "写真にまつわる想い出"
         )
-        # 写真URL列は「想い出の写真/思い出の写真」を最優先。次に "photo/image"、最後に汎用の「写真」。
-        # 写真URL列は列名を決め打ちする（Googleフォーム仕様に依存）
         photo_col = "想い出の写真"
         if photo_col not in df.columns:
             raise KeyError(f"PHOTO_URL 列 '{photo_col}' が見つかりません。columns={cols}")
         menu_col = find_col("好きだったメニュー", "メニュー", "menu")  # もし混ざってても拾う
-
     # 列名が取れない場合は、従来の並び（先頭から）にフォールバック
     def safe_iloc(i: int) -> pd.Series:
         if df.shape[1] > i:
@@ -261,6 +257,10 @@ def fetch_and_merge_csv_data(csv_url: str, photo_url: str = "") -> pd.DataFrame:
             # 両方のDataFrameをマージ（列名が同じものは同じ列に、片方にない列は空文字）
             if not df_photos_norm.empty:
                 df_merged = pd.concat([df_comments_norm, df_photos_norm], ignore_index=True, sort=False)
+                # タイムスタンプで新しいものが先頭に来るようソート
+                df_merged["_ts"] = pd.to_datetime(df_merged["timestamp"], errors="coerce")
+                df_merged = df_merged.sort_values("_ts", ascending=False).drop(columns=["_ts"])
+                # df_merged = df_merged.sort_values("_ts", ascending=False)
                 print(f"✓ コメントと写真投稿をマージ: 合計 {len(df_merged)} 件")
                 print("df_merged:\n", df_merged)
                 df_merged.to_csv(DATA_DIR / "merged.csv", index=False, encoding="utf-8")
@@ -270,6 +270,9 @@ def fetch_and_merge_csv_data(csv_url: str, photo_url: str = "") -> pd.DataFrame:
             print(f"⚠️ 写真投稿CSVの取得に失敗しました: {e}")
             print(f"  → コメントのみを使用します")
     
+    # コメントのみの場合もソートして返す
+    df_comments_norm["_ts"] = pd.to_datetime(df_comments_norm["timestamp"], errors="coerce")
+    df_comments_norm = df_comments_norm.sort_values("_ts", ascending=False).drop(columns=["_ts"])
     return df_comments_norm
 
 
@@ -585,12 +588,14 @@ def prepare_comments_data(df: pd.DataFrame) -> list:
             name = row.get("name", "")
             menu = row.get("menu", "")
             photo_url = row.get("photo", "")
+            ts_dt = pd.to_datetime(timestamp, errors="coerce")
         else:
             # 旧来の列並び（フォールバック）
             timestamp = row.iloc[0] if len(row) > 0 else ""
             content = row.iloc[1] if len(row) > 1 else ""
             name = row.iloc[2] if len(row) > 2 else "匿名"
             menu = row.iloc[3] if len(row) > 3 else ""
+            ts_dt = pd.to_datetime(timestamp, errors="coerce")
 
             # 写真URLのカラムを探す
             photo_url = ""
@@ -615,6 +620,7 @@ def prepare_comments_data(df: pd.DataFrame) -> list:
         
         comment = {
             "timestamp": timestamp,
+            "_ts_dt": ts_dt,
             "content": str(content),
             "menu": str(menu),
             "photo_url": str(photo_url),
@@ -636,11 +642,15 @@ def prepare_comments_data(df: pd.DataFrame) -> list:
             comments.append(comment)
     
     # 新しい順にソート（Timestampがある場合）
-    if comments and comments[0].get("timestamp"):
-        try:
-            comments.sort(key=lambda x: x["timestamp"], reverse=True)
-        except:
-            pass
+    # 日付でソート（新しい順）。パースできない場合はそのまま。
+    try:
+        comments.sort(key=lambda x: (x.get("_ts_dt") or pd.Timestamp.min), reverse=True)
+    except Exception:
+        pass
+
+    # ソート用の一時キーを削除
+    for c in comments:
+        c.pop("_ts_dt", None)
     
     return comments
 
