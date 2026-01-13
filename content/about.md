@@ -13,6 +13,7 @@
 - Instagram: [https://www.instagram.com/nori_raman](https://www.instagram.com/nori_raman?igsh=aTg2bWtiOGV4N3p2)
 - 食べログ : [ラーメンNORI](https://tabelog.com/ehime/A3801/A380101/38013778/)
 - 食べログ（移転前）： [ラーメンNORI （ノリ 【旧店名】ラーメン萬田）](https://tabelog.com/ehime/A3801/A380101/38012330/)
+- Retty : [ラーメンNORI](https://retty.me/area/PRE38/ARE145/SUB14501/100001579716/)
 
 ### 店舗の場所
 
@@ -29,30 +30,32 @@
 - **2014-11-21** [松山「ラーメンNORI」が週替わりラーメン－かにラーメンなど:松山経済新聞](https://matsuyama.keizai.biz/headline/1583/?utm_source=chatgpt.com)
 
 ## 店舗の変遷
-
 ### 朝生田時代（2012年）：ラーメン萬田
-
-朝生田時代のラーメン萬田(2012)
+![朝生田時代のラーメン萬田(2012)](static/images/ramen_manda_2012.webp)
 
 ### 朝生田時代（2015年）：ラーメンNORIに改名
 
-朝生田時代のラーメンNORI(2015)
+![朝生田時代のラーメンNORI(2015)](static/images/ramen_nori_2015.webp)
 
 ### 朝生田時代（2018年）
 
-朝生田時代のラーメンNORI(2018)
+![朝生田時代のラーメンNORI(2018)](static/images/ramen_nori_2018.webp)
 
 ### 道後祝谷時代（2020年）
 
-道後祝谷時代のラーメンNORI(2020)
+![道後祝谷時代のラーメンNORI(2020)](static/images/ramen_nori_2020.webp)
 
 ### 道後湯之町時代（2021年）
 
-道後湯之町時代のラーメンNORI(2021)
+![道後湯之町時代のラーメンNORI(2021)](static/images/ramen_nori_2021.webp)
 
 ### 道後湯之町時代（2024年）
 
-道後湯之町時代のラーメンNORI(2024)
+![道後湯之町時代のラーメンNORI(2024)](static/images/ramen_nori_2024.webp)
+
+<!-- ### 店主と共に（2025年） -->
+
+<!-- ![店主と共に(2025)](static/images/ramen_nori_2025.webp) -->
 
 ---
 
