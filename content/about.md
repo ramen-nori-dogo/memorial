@@ -8,16 +8,20 @@
 - テーマ曲 : [I LOVE NORI](https://soundcloud.com/tsuru-mitsumune/i-love-nori?utm_source=clipboard&utm_campaign=wtshare&utm_medium=widget&utm_content=https%253A%252F%252Fsoundcloud.com%252Ftsuru-mitsumune%252Fi-love-nori)
 
 ### SNS
+
 - X（Twitter）: [https://x.com/nori3515](https://x.com/nori3515)
+- Instagram: [https://www.instagram.com/nori_raman](https://www.instagram.com/nori_raman?igsh=aTg2bWtiOGV4N3p2)
 - 食べログ : [ラーメンNORI](https://tabelog.com/ehime/A3801/A380101/38013778/)
 - 食べログ（移転前）： [ラーメンNORI （ノリ 【旧店名】ラーメン萬田）](https://tabelog.com/ehime/A3801/A380101/38012330/)
 
 ### 店舗の場所
+
 - [道後湯之町時代](https://www.google.com/maps/place/%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B3+NORI/@33.8505917,132.7850923,1037m/data=!3m1!1e3!4m14!1m7!3m6!1s0x354fef5c8d03f0b1:0xa3aeee3e7e331d5!2z44Op44O844Oh44OzIE5PUkk!8m2!3d33.8505873!4d132.7876726!16s%2Fg%2F1tj1_bq1!3m5!1s0x354fef5c8d03f0b1:0xa3aeee3e7e331d5!8m2!3d33.8505873!4d132.7876726!16s%2Fg%2F1tj1_bq1?entry=ttu&g_ep=EgoyMDI2MDEwNy4wIKXMDSoKLDEwMDc5MjA3MUgBUAM%3D)
 - [道後祝谷時代](https://maps.app.goo.gl/V2BcTA1jE3LaTMqD9)
 - [朝生田時代](https://maps.app.goo.gl/kWy5oJ41j9ouX6wM7)
 
 ### ニュース記事
+
 - **2014-07-07** [松山「ラーメン萬田」、「ラーメンNORI」として復活: 松山経済新聞](https://matsuyama.keizai.biz/headline/1492/?utm_source=chatgpt.com)
 - **2014-09-12** [秋冬メニューにチゲラーメン－ピリッと温まって:松山経済新聞](https://matsuyama.keizai.biz/headline/1537/?utm_source=chatgpt.com)
 - **2014-10-03** [秋冬限定「もつラーメン」－あっさり塩味ベースに:松山経済新聞](https://matsuyama.keizai.biz/headline/1550/?utm_source=chatgpt.com)
@@ -28,31 +32,27 @@
 
 ### 朝生田時代（2012年）：ラーメン萬田
 
-![朝生田時代のラーメン萬田(2012)](static/images/ramen_manda_2012.webp)
+朝生田時代のラーメン萬田(2012)
 
 ### 朝生田時代（2015年）：ラーメンNORIに改名
 
-![朝生田時代のラーメンNORI(2015)](static/images/ramen_nori_2015.webp)
+朝生田時代のラーメンNORI(2015)
 
 ### 朝生田時代（2018年）
 
-![朝生田時代のラーメンNORI(2018)](static/images/ramen_nori_2018.webp)
+朝生田時代のラーメンNORI(2018)
 
 ### 道後祝谷時代（2020年）
 
-![道後祝谷時代のラーメンNORI(2020)](static/images/ramen_nori_2020.webp)
+道後祝谷時代のラーメンNORI(2020)
 
 ### 道後湯之町時代（2021年）
 
-![道後湯之町時代のラーメンNORI(2021)](static/images/ramen_nori_2021.webp)
+道後湯之町時代のラーメンNORI(2021)
 
 ### 道後湯之町時代（2024年）
 
-![道後湯之町時代のラーメンNORI(2024)](static/images/ramen_nori_2024.webp)
-
-<!-- ### 店主と共に（2025年） -->
-
-<!-- ![店主と共に(2025)](static/images/ramen_nori_2025.webp) -->
+道後湯之町時代のラーメンNORI(2024)
 
 ---
 
