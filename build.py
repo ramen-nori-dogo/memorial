@@ -41,6 +41,7 @@ STATIC_DIR = BASE_DIR / "static"
 OUTPUT_IMAGES_DIR = STATIC_DIR / "images"
 PUBLIC_DIR = BASE_DIR / "public"
 CONFIG_FILE = BASE_DIR / "config.json"
+DOWNLOAD_HISTORY_FILE = DATA_DIR / ".download_history.json"
 
 # 画像処理設定
 MAX_IMAGE_WIDTH = 1200  # 最大幅（ピクセル）
@@ -369,10 +370,9 @@ def load_download_history() -> dict:
     Returns:
         dict: URLハッシュをキーとした履歴辞書
     """
-    history_file = DATA_DIR / ".download_history.json"
-    if history_file.exists():
+    if DOWNLOAD_HISTORY_FILE.exists():
         try:
-            with open(history_file, 'r', encoding='utf-8') as f:
+            with open(DOWNLOAD_HISTORY_FILE, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
             print(f"  ⚠️ ダウンロード履歴の読み込みに失敗: {e}")
@@ -386,9 +386,8 @@ def save_download_history(history: dict):
     Args:
         history: URLハッシュをキーとした履歴辞書
     """
-    history_file = DATA_DIR / ".download_history.json"
     try:
-        with open(history_file, 'w', encoding='utf-8') as f:
+        with open(DOWNLOAD_HISTORY_FILE, 'w', encoding='utf-8') as f:
             json.dump(history, f, ensure_ascii=False, indent=2)
     except Exception as e:
         print(f"  ⚠️ ダウンロード履歴の保存に失敗: {e}")
