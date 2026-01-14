@@ -245,6 +245,14 @@
             <p class="footer-meta">
                 {{ footer.updated_label|default('最終更新') }}: {{ generated_at }}
             </p>
+            {% if config.github.repository_url %}
+            <p class="footer-github">
+                <a href="{{ config.github.repository_url }}" target="_blank" rel="noopener noreferrer" class="github-link">
+                    <i class="bi bi-github"></i>
+                    GitHub
+                </a>
+            </p>
+            {% endif %}
         </div>
     </div>
 </footer>

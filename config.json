@@ -55,5 +55,8 @@
     "modal_alt_text": "拡大画像",
     "modal_close_label": "閉じる",
     "photo_alt_prefix": "ラーメンNORIの想い出の写真"
+  },
+  "github": {
+    "repository_url": "https://github.com/ramen-nori-dogo/memorial"
   }
 }

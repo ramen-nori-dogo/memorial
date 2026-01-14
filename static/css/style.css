@@ -605,6 +605,31 @@ h1, h2, h3, h4, h5, h6 {
     opacity: 0.8;
 }
 
+.footer-github {
+    margin-top: 1rem;
+}
+
+.github-link {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.github-link:hover {
+    opacity: 1;
+    color: var(--color-accent);
+    transform: translateY(-2px);
+}
+
+.github-link i {
+    font-size: 1.2rem;
+}
+
 /* -----------------------------------------------------------------------------
    Animations
    ----------------------------------------------------------------------------- */
