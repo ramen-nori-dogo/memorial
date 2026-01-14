@@ -4,7 +4,7 @@
 
 優しい塩ラーメンが人気の知る人ぞ知る名店でしたが、店主のNORIさんは、2026年1月上旬に残念ながら逝去され閉店となりました。
 
-- [店主のNORIさん:愛媛新聞](https://matsuyama.keizai.biz/photoflash/739/)
+- [店主のNORIさん:松山経済新聞](https://matsuyama.keizai.biz/photoflash/739/)
 - テーマ曲 : [I LOVE NORI](https://soundcloud.com/tsuru-mitsumune/i-love-nori?utm_source=clipboard&utm_campaign=wtshare&utm_medium=widget&utm_content=https%253A%252F%252Fsoundcloud.com%252Ftsuru-mitsumune%252Fi-love-nori)
 
 ### SNS
