@@ -362,6 +362,38 @@ def download_image_from_google_drive(url: str, output_path: Path) -> bool:
         return False
 
 
+def load_download_history() -> dict:
+    """
+    ダウンロード履歴を読み込みます。
+    
+    Returns:
+        dict: URLハッシュをキーとした履歴辞書
+    """
+    history_file = DATA_DIR / ".download_history.json"
+    if history_file.exists():
+        try:
+            with open(history_file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"  ⚠️ ダウンロード履歴の読み込みに失敗: {e}")
+    return {}
+
+
+def save_download_history(history: dict):
+    """
+    ダウンロード履歴を保存します。
+    
+    Args:
+        history: URLハッシュをキーとした履歴辞書
+    """
+    history_file = DATA_DIR / ".download_history.json"
+    try:
+        with open(history_file, 'w', encoding='utf-8') as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"  ⚠️ ダウンロード履歴の保存に失敗: {e}")
+
+
 def download_images_from_csv(df: pd.DataFrame) -> int:
     """
     CSVに含まれるGoogle Drive URLから画像をダウンロードします。
@@ -372,6 +404,8 @@ def download_images_from_csv(df: pd.DataFrame) -> int:
     Returns:
         int: ダウンロードした画像の数
     """
+    import hashlib
+    
     if df.empty:
         return 0
     
@@ -394,7 +428,11 @@ def download_images_from_csv(df: pd.DataFrame) -> int:
         return 0
     
     RAW_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    
+    # ダウンロード履歴を読み込み
+    download_history = load_download_history()
     downloaded_count = 0
+    history_updated = False
     
     for idx, row in df.iterrows():
         # 写真URLのカラムにアクセス
@@ -410,21 +448,55 @@ def download_images_from_csv(df: pd.DataFrame) -> int:
                 # 共有URLではない値（ファイル名など）の可能性
                 continue
 
-            # ファイル名を生成（タイムスタンプ + 行番号）
+            # ファイル名を生成（タイムスタンプ + URLのハッシュ）
+            # URLのハッシュを使用することで、同じ写真は常に同じファイル名になる
             timestamp = row.get("timestamp", "") if "timestamp" in df.columns else (row.iloc[0] if len(row) > 0 else "")
             safe_timestamp = str(timestamp).replace("/", "").replace(":", "").replace(" ", "_")
-            filename = f"photo_{safe_timestamp}_{idx}.jpg"
+            
+            # URLのハッシュを計算（最初の8文字のみ使用）
+            url_hash = hashlib.md5(photo_url_str.encode('utf-8')).hexdigest()[:8]
+            filename = f"photo_{safe_timestamp}_{url_hash}.jpg"
             output_path = RAW_IMAGES_DIR / filename
 
+            # ダウンロード履歴でチェック
+            if url_hash in download_history:
+                # 履歴にあるが、ファイルが削除されている場合は再ダウンロード
+                if output_path.exists():
+                    print(f"  ⊙ スキップ（履歴あり）: {filename}")
+                    continue
+                else:
+                    print(f"  ℹ️ ファイルが見つからないため再ダウンロード: {filename}")
+            
             # 既にダウンロード済みならスキップ
             if output_path.exists():
                 print(f"  ⊙ スキップ（既存）: {filename}")
+                # 履歴に追加
+                download_history[url_hash] = {
+                    "url": photo_url_str,
+                    "filename": filename,
+                    "timestamp": safe_timestamp,
+                    "downloaded_at": datetime.now().isoformat()
+                }
+                history_updated = True
                 continue
 
             print(f"  ⬇ ダウンロード中: {filename}")
             if download_image_from_google_drive(str(photo_url), output_path):
                 print(f"  ✓ 保存完了: {filename}")
                 downloaded_count += 1
+                # ダウンロード履歴に追加
+                download_history[url_hash] = {
+                    "url": photo_url_str,
+                    "filename": filename,
+                    "timestamp": safe_timestamp,
+                    "downloaded_at": datetime.now().isoformat()
+                }
+                history_updated = True
+    
+    # ダウンロード履歴を保存（更新があった場合のみ）
+    if history_updated:
+        save_download_history(download_history)
+        print(f"  ✓ ダウンロード履歴を更新しました")
     
     if downloaded_count > 0:
         print(f"  → {downloaded_count} 件の画像をダウンロードしました")
@@ -611,12 +683,14 @@ def prepare_comments_data(df: pd.DataFrame) -> list:
         # 写真のローカルパスを特定（ダウンロード済みの画像）
         photo_filename = None
         if pd.notna(photo_url) and str(photo_url).strip() and str(photo_url) != "nan":
+            import hashlib
             photo_url_str = str(photo_url).strip()
             # URLらしい文字列の場合のみファイル名を生成
             if photo_url_str.startswith('http') or 'drive.google.com' in photo_url_str:
-                # タイムスタンプベースのファイル名を生成
+                # タイムスタンプ + URLのハッシュでファイル名を生成（ダウンロード時と同じロジック）
                 safe_timestamp = str(timestamp).replace("/", "").replace(":", "").replace(" ", "_")
-                photo_filename = f"photo_{safe_timestamp}_{idx}.webp"
+                url_hash = hashlib.md5(photo_url_str.encode('utf-8')).hexdigest()[:8]
+                photo_filename = f"photo_{safe_timestamp}_{url_hash}.webp"
         
         comment = {
             "timestamp": timestamp,

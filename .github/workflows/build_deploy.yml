@@ -67,6 +67,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
+      # 3.5. 画像キャッシュの復元
+      - name: Cache downloaded images
+        uses: actions/cache@v4
+        with:
+          path: |
+            raw_images/photo_*.jpg
+            raw_images/photo_*.jpeg
+            raw_images/photo_*.png
+            static/images/photo_*.webp
+            data/.download_history.json
+          key: images-cache-${{ hashFiles('data/comments.csv', 'data/photos.csv') }}
+          restore-keys: |
+            images-cache-
+      
       # 4. サイトのビルド
       - name: Build site
         run: python build.py
