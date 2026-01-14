@@ -24,6 +24,7 @@ help:
 	@echo "  make build     - サイトをビルド（CSVを取得して静的ファイル生成）"
 	@echo "  make build-local - サイトをビルド（ローカルキャッシュを使用）"
 	@echo "  make preview   - ローカルサーバーを起動してプレビュー"
+	@echo "  make test      - メニュー集計機能のテストを実行"
 	@echo "  make publish   - 変更をコミットしてプッシュ"
 	@echo "  make clean     - 生成ファイルを削除"
 	@echo ""
@@ -80,6 +81,13 @@ preview:
 	@echo "   URL: http://localhost:$(PORT)"
 	@echo "   終了するには Ctrl+C を押してください"
 	@cd $(PUBLIC_DIR) && python3 -m http.server $(PORT)
+
+# テストの実行
+.PHONY: test
+test: $(VENV)/bin/activate
+	@echo "🧪 メニュー集計機能のテストを実行中..."
+	$(PYTHON) -m unittest tests.test_menu_aggregation -v
+	@echo "✅ テスト完了"
 
 # 変更をコミットしてプッシュ
 .PHONY: publish
