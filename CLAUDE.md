@@ -137,6 +137,12 @@ memorial-site/
 
 
 
+* **「好きだったメニュー」の集計・表示:**
+* コメントCSV内の「好きだったメニュー」列を集計し、メニューごとの件数を算出してテンプレートに渡す。
+* 区切り文字は半角カンマ`,`だけでなく、全角の`、`や`，`、改行などの混在にも対応する。
+* トップページのコメントセクション上部に「好きだったメニュー ランキング」としてメニュー名と票数を一覧表示する。
+* 集計ロジックはユニットテスト（`tests/test_menu_aggregation.py`）で検証し、テストデータ`tests/data/comments.csv`における「焦がしガーリック」の件数が6件であることを必ず確認する。
+
 #### B. Makefile のコマンド定義
 
 以下のコマンドを実装してください。
@@ -211,6 +217,7 @@ memorial-site/
 10. `.gitignore` - Git除外設定
     * CSVからダウンロードされる画像（`raw_images/photo_*.jpg`, `static/images/photo_*.webp`）を除外
     * `data/.download_history.json` はGitで管理（軽量で重複防止に必要）
+11. `tests/test_menu_aggregation.py` - 「好きだったメニュー」集計ロジックのユニットテスト（`tests/data/comments.csv`を用い、「焦がしガーリック」が6件で集計されることなどを確認）
 
 ---
 
