@@ -209,13 +209,23 @@ def fetch_csv_data(csv_url: str) -> pd.DataFrame:
 def load_local_csv() -> pd.DataFrame:
     """
     ローカルのキャッシュCSVを読み込みます。
+    正規化済みのmerged.csvを優先的に読み込みます。
     
     Returns:
         pandas.DataFrame: 読み込んだデータ（ファイルがなければ空のDataFrame）
     """
+    # 正規化済みのmerged.csvを優先
+    merged_path = DATA_DIR / "merged.csv"
+    if merged_path.exists():
+        return pd.read_csv(merged_path, encoding='utf-8')
+    
+    # なければcomments.csvを読み込んで正規化
     cache_path = DATA_DIR / "comments.csv"
     if cache_path.exists():
-        return pd.read_csv(cache_path, encoding='utf-8')
+        df = pd.read_csv(cache_path, encoding='utf-8')
+        # 正規化して返す
+        return normalize_form_df(df, "comments")
+    
     return pd.DataFrame()
 
 
@@ -633,6 +643,60 @@ def extract_store_history(about_html: str) -> tuple:
     return about_without_history, stores
 
 
+def aggregate_menu_items(df: pd.DataFrame) -> dict:
+    """
+    「好きだったメニュー」を集計します。
+    カンマ区切り、全角カンマ、その他の区切り文字に対応します。
+    
+    Args:
+        df: コメントデータのDataFrame
+    
+    Returns:
+        dict: メニュー名をキー、出現回数を値とした辞書（降順ソート済み）
+    """
+    import re
+    from collections import Counter
+    
+    menu_counter = Counter()
+    
+    if df.empty:
+        return {}
+    
+    # 正規化済みスキーマがあればそれを優先
+    has_normalized = all(c in df.columns for c in ["timestamp", "comment", "name", "menu", "photo"])
+    
+    for idx, row in df.iterrows():
+        if has_normalized:
+            menu = row.get("menu", "")
+        else:
+            # 旧来の列並び（フォールバック）
+            menu = row.iloc[3] if len(row) > 3 else ""
+        
+        # 空の場合はスキップ
+        if pd.isna(menu) or str(menu).strip() == "" or str(menu) == "nan":
+            continue
+        
+        menu_str = str(menu).strip()
+        
+        # 複数の区切り文字に対応: カンマ、全角カンマ、セミコロンなど
+        # 正規表現で複数の区切り文字を一度に分割
+        # カンマ（,）、全角カンマ（、）、全角カンマ（，）、セミコロン（;）、改行（\n）などで分割
+        # 区切り文字の前後の空白も削除
+        menu_items = re.split(r'[,、，;；\n]+', menu_str)
+        
+        # 各メニュー項目を正規化（前後の空白を削除、空文字列を除外）
+        for item in menu_items:
+            normalized = item.strip()
+            # 全角スペースや通常のスペースのみの項目は除外
+            if normalized and normalized not in ['', ' ', '　']:
+                menu_counter[normalized] += 1
+    
+    # 出現回数で降順ソートして辞書に変換
+    sorted_menus = dict(sorted(menu_counter.items(), key=lambda x: x[1], reverse=True))
+    
+    return sorted_menus
+
+
 def prepare_comments_data(df: pd.DataFrame) -> list:
     """
     DataFrameをテンプレート用の辞書リストに変換します。
@@ -728,7 +792,7 @@ def prepare_comments_data(df: pd.DataFrame) -> list:
     return comments
 
 
-def generate_html(comments: list, images: list, about_html: str, config: dict, store_history: list = None):
+def generate_html(comments: list, images: list, about_html: str, config: dict, store_history: list = None, menu_stats: dict = None):
     """
     Jinja2テンプレートを使用してHTMLを生成します。
     
@@ -738,6 +802,7 @@ def generate_html(comments: list, images: list, about_html: str, config: dict, s
         about_html: 「店主について」のHTML
         config: 設定情報の辞書
         store_history: 店舗変遷データのリスト
+        menu_stats: メニュー集計結果の辞書（メニュー名: 出現回数）
     """
     print(f"\n📝 HTMLを生成中...")
     
@@ -765,6 +830,7 @@ def generate_html(comments: list, images: list, about_html: str, config: dict, s
         "images": images,
         "about_html": about_html,
         "store_history": store_history or [],
+        "menu_stats": menu_stats or {},
         "generated_at": datetime.now().strftime("%Y年%m月%d日 %H:%M"),
         "comment_count": len(comments),
         "image_count": len(images),
@@ -887,8 +953,11 @@ def main():
     # 8. コメントデータを準備
     comments = prepare_comments_data(df)
     
+    # 8-1. メニュー集計
+    menu_stats = aggregate_menu_items(df)
+    
     # 9. HTMLを生成
-    generate_html(comments, images, about_html, config, store_history)
+    generate_html(comments, images, about_html, config, store_history, menu_stats)
     
     print("\n" + "=" * 60)
     print("✨ ビルド完了!")
