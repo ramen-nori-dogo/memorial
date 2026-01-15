@@ -11,6 +11,7 @@
 
 - X（Twitter）: [https://x.com/nori3515](https://x.com/nori3515)
 - Instagram: [https://www.instagram.com/nori_raman](https://www.instagram.com/nori_raman?igsh=aTg2bWtiOGV4N3p2)
+- Facebook: [https://www.facebook.com/12345nori/](https://www.facebook.com/12345nori/)
 - 食べログ : [ラーメンNORI](https://tabelog.com/ehime/A3801/A380101/38013778/)
 - 食べログ（移転前）： [ラーメンNORI （ノリ 【旧店名】ラーメン萬田）](https://tabelog.com/ehime/A3801/A380101/38012330/)
 - Retty : [ラーメンNORI](https://retty.me/area/PRE38/ARE145/SUB14501/100001579716/)
@@ -28,6 +29,7 @@
 - **2014-10-03** [秋冬限定「もつラーメン」－あっさり塩味ベースに:松山経済新聞](https://matsuyama.keizai.biz/headline/1550/?utm_source=chatgpt.com)
 - **2014-10-24** [松山・ラーメンNORIが「しょうが豆腐ラーメン」－つるんとした食感楽しんで:松山経済新聞](https://matsuyama.keizai.biz/headline/1564/?utm_source=chatgpt.com)
 - **2014-11-21** [松山「ラーメンNORI」が週替わりラーメン－かにラーメンなど:松山経済新聞](https://matsuyama.keizai.biz/headline/1583/?utm_source=chatgpt.com)
+- **2023-03-23** [発見！松山道後で朝ラーメン出来る場所あり『ラーメンNORI』:Livingえひめ](https://mrs.living.jp/ehime/town_gourmet/reporter/5019528)
 
 ## 店舗の変遷
 ### 朝生田時代（2012年）：ラーメン萬田
