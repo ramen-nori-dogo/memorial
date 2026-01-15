@@ -295,69 +295,144 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* -----------------------------------------------------------------------------
-   Menu Statistics Section
+   Menu Statistics Section - 横棒グラフ
    ----------------------------------------------------------------------------- */
 .menu-stats-section {
-    margin-bottom: 3rem;
+    background: var(--color-bg-section);
 }
 
-.menu-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
+.menu-chart-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem;
     margin-top: 1.5rem;
 }
 
-.menu-stat-item {
+.menu-chart-item {
+    margin-bottom: 1rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 1rem 1.25rem;
-    background: var(--color-bg-section);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--color-border);
-    transition: all 0.3s ease;
+    gap: 1rem;
 }
 
-.menu-stat-item:hover {
-    background: var(--color-accent-soft);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px var(--color-shadow);
-}
-
-.menu-name {
+.menu-chart-label {
+    min-width: 120px;
+    max-width: 120px;
     font-weight: 500;
     color: var(--color-text);
-    font-size: 1rem;
+    font-size: 0.95rem;
+    text-align: right;
+    padding-right: 0.75rem;
+    flex-shrink: 0;
 }
 
-.menu-count {
+.menu-chart-bar-wrapper {
+    flex: 1;
+    position: relative;
+    height: 32px;
+    background: var(--color-bg-section);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+}
+
+.menu-chart-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+    transition: all 0.3s ease;
+    position: relative;
+    min-width: 60px;
+}
+
+.menu-chart-bar:hover {
+    background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
+    box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+.menu-chart-value {
     font-weight: 700;
-    color: var(--color-primary);
-    font-size: 1.1rem;
-    background: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    min-width: 50px;
-    text-align: center;
+    color: white;
+    font-size: 0.9rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+/* スクロールバーのスタイリング */
+.menu-chart-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.menu-chart-container::-webkit-scrollbar-track {
+    background: var(--color-bg-section);
+    border-radius: 3px;
+}
+
+.menu-chart-container::-webkit-scrollbar-thumb {
+    background: var(--color-primary-light);
+    border-radius: 3px;
+}
+
+.menu-chart-container::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
 }
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
-    .menu-stats-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    .menu-chart-container {
+        max-height: 350px;
+        padding: 0.25rem;
+    }
+    
+    .menu-chart-item {
+        margin-bottom: 0.75rem;
         gap: 0.75rem;
     }
     
-    .menu-stat-item {
-        padding: 0.75rem 1rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
+    .menu-chart-label {
+        min-width: 100px;
+        max-width: 100px;
+        font-size: 0.85rem;
+        padding-right: 0.5rem;
     }
     
-    .menu-count {
-        align-self: flex-end;
+    .menu-chart-bar-wrapper {
+        height: 28px;
+    }
+    
+    .menu-chart-bar {
+        min-width: 50px;
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+    
+    .menu-chart-value {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .menu-chart-container {
+        max-height: 300px;
+    }
+    
+    .menu-chart-label {
+        min-width: 80px;
+        max-width: 80px;
+        font-size: 0.8rem;
+    }
+    
+    .menu-chart-bar-wrapper {
+        height: 26px;
+    }
+    
+    .menu-chart-value {
+        font-size: 0.75rem;
     }
 }
 

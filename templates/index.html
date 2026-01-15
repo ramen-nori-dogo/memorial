@@ -52,6 +52,13 @@
                     <i class="bi bi-person-heart"></i> {{ navigation.about|default('店主について') }}
                 </a>
             </li>
+            {% if menu_stats %}
+            <li class="nav-item">
+                <a class="nav-link" href="#menu-stats">
+                    <i class="bi bi-bar-chart"></i> {% if navigation.menu_stats is defined %}{{ navigation.menu_stats }}{% else %}好きだったメニュー{% endif %}
+                </a>
+            </li>
+            {% endif %}
             <li class="nav-item">
                 <a class="nav-link" href="#comments">
                     <i class="bi bi-chat-quote"></i> {{ navigation.comments|default('ファンの声') }}
@@ -133,6 +140,38 @@
         </div>
     </section>
 
+    <!-- 好きだったメニュー集計 -->
+    {% if menu_stats %}
+    <section id="menu-stats" class="section menu-stats-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="{% if sections.menu_stats is defined and sections.menu_stats.icon is defined %}{{ sections.menu_stats.icon }}{% else %}bi-bar-chart{% endif %}"></i>
+                    {% if sections.menu_stats is defined and sections.menu_stats.title is defined %}{{ sections.menu_stats.title }}{% else %}好きだったメニュー ランキング{% endif %}
+                </h2>
+                <p class="section-description">
+                    {% if sections.menu_stats is defined and sections.menu_stats.description is defined %}{{ sections.menu_stats.description }}{% else %}皆様が好きだったメニューの集計です{% endif %}
+                </p>
+            </div>
+            <div class="card-memorial">
+                <div class="menu-chart-container">
+                    {% set max_count = menu_stats.values() | max %}
+                    {% for menu_name, count in menu_stats.items() %}
+                    <div class="menu-chart-item">
+                        <div class="menu-chart-label">{{ menu_name }}</div>
+                        <div class="menu-chart-bar-wrapper">
+                            <div class="menu-chart-bar" style="width: {{ (count / max_count * 100) | round(1) }}%">
+                                <span class="menu-chart-value">{{ count }}票</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
     <!-- ファンの声（コメント） -->
     <section id="comments" class="section comments-section">
         <div class="container">
@@ -145,26 +184,6 @@
                     {{ sections.comments.description|default('皆様から寄せられた、心温まる想い出の数々です') }}
                 </p>
             </div>
-            
-            {% if menu_stats %}
-            <!-- 好きだったメニュー集計 -->
-            <div class="menu-stats-section mb-5">
-                <div class="card-memorial">
-                    <h3 class="text-center mb-4">
-                        <i class="bi bi-bar-chart"></i>
-                        好きだったメニュー ランキング
-                    </h3>
-                    <div class="menu-stats-grid">
-                        {% for menu_name, count in menu_stats.items() %}
-                        <div class="menu-stat-item">
-                            <span class="menu-name">{{ menu_name }}</span>
-                            <span class="menu-count">{{ count }}票</span>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            {% endif %}
             
             {% if comments %}
             <div class="timeline">
